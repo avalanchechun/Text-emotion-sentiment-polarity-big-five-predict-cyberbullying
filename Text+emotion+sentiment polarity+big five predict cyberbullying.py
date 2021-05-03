@@ -146,8 +146,7 @@ from tensorflow.keras import layers
 ### Models
 # Specify wide model
 ############
-#Let's now create our two input layers. 
-#The first input layer will be used to input the textual input and the second input layer will be used to input meta information from the three columns.
+
 input_1 = layers.Input(shape=(maxlen,))
 input_2 = layers.Input(shape=(11)) #3個column, useful funny cool
 #Create the first submodel that accepts data from first input layer
@@ -155,13 +154,10 @@ embedding_layer = layers.Embedding(input_dim=vocab_size,output_dim=embed_dim,
                             weights=[embedding_matrix], trainable=False,
                             mask_zero=True)(input_1)
 BiLSTM_Layer_1 = layers.Bidirectional(layers.LSTM(128))(embedding_layer)
-#Creates a second submodel that accepts input from the second input layer
+
 dense_layer_1 = layers.Dense(10, activation='relu')(input_2)
 dense_layer_2 = layers.Dense(10, activation='relu')(dense_layer_1)
-#We now have two submodels. What we want to do is concatenate the output from the first submodel with the output from the second submodel.
-#The output from the first submodel is the output from the LSTM_Layer_1 and similarly, 
-#the output from the second submodel is the output from the dense_layer_2. 
-#We can use the Concatenate class from the keras.layers.merge module to concatenate two inputs.
+
 concat_layer =  layers.concatenate([BiLSTM_Layer_1, dense_layer_2])
 layer_drop = layers.Dropout(0.5)(concat_layer) 
 dense_layer_3 = layers.Dense(64, activation='relu', kernel_initializer=keras.initializers.HeNormal(seed=None))(layer_drop)
